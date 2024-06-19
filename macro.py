@@ -1,10 +1,9 @@
 import pyautogui as pag
 from pynput import mouse, keyboard as kb
-from functools import partial
-import keyboard
 import json
 import os
 import time
+import keyboard
 
 
 class Macro:
@@ -53,8 +52,11 @@ class Macro:
                 self.record_macro()
 
             elif command[0] == 'run':
-                self.run_macro(command[1])
-                
+                if command[1] == 'loop':
+                    self.run_macro(command[2], loop=True)
+                else:
+                    self.run_macro(command[1])
+
             elif command[0] == 'exit':
                 with open("config.json", 'w') as f:
                     json.dump(self.config, f)
@@ -79,17 +81,28 @@ class Macro:
 
         self.terminate_recording(mouse_listener, keyboard_listener)
 
-    def run_macro(self, macro_name):
+    def run_macro(self, macro_name, loop=False):
         if macro_name in self.config["macros"]:
-            for action in self.config["macros"][macro_name]:
-                if type(action) == list:
-                    print(action[0], action[1])
-                    # move to mouse position and then click
-                    pag.moveTo(action[0], action[1])
-                    pag.click()
-                    time.sleep(1)
-
-                else:
-                    pag.keyDown(action)
+            if loop:
+                while not keyboard.is_pressed("q"):
+                    for action in self.config["macros"][macro_name]:
+                        if type(action) == list:
+                            print(action[0], action[1])
+                            # move to mouse position and then click
+                            pag.moveTo(action[0], action[1])
+                            pag.click()
+                            time.sleep(1)
+                        else:
+                            pag.keyDown(action)
+            else:
+                for action in self.config["macros"][macro_name]:
+                    if type(action) == list:
+                        print(action[0], action[1])
+                        # move to mouse position and then click
+                        pag.moveTo(action[0], action[1])
+                        pag.click()
+                        time.sleep(1)
+                    else:
+                        pag.keyDown(action)
         else:
             print("Macro not found")

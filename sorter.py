@@ -1,6 +1,7 @@
 import shutil
 import os
 import json
+import CLI
 # "hello"try:tkinter p[elif:hiiii import tkinter as tk    ] - my gf
 
 
@@ -86,6 +87,7 @@ class FileSorter:
             elif command[0] == 'exit':
                 with open('config.json', 'w') as f:
                     json.dump(self.config, f)
+                    CLI.CLI().command_line()
                 break
             else:
                 print("Invalid command")
